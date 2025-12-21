@@ -1,0 +1,20 @@
+model Book {
+  id          String    @id @default(uuid())
+  title       String
+  authors     String
+  publishedBy String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime? // Soft delete
+
+  // Relations
+  createdBy     String
+  createdByUser User   @relation("createdBy", fields: [createdBy], references: [id])
+
+  updatedBy     String?
+  updatedByUser User?   @relation("updatedBy", fields: [updatedBy], references: [id])
+
+  @@index([id])
+  @@index([createdAt])
+  @@index([createdBy])
+}

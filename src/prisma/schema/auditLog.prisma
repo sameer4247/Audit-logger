@@ -1,0 +1,27 @@
+model AuditLog {
+    id        String     @id @default(cuid())
+    timestamp DateTime   @default(now())
+    entity    String // 'Book', 'User', etc.
+    entityId  String
+    action    ActionType
+    actorId   String
+    actor     User       @relation("actor", fields: [actorId], references: [id])
+
+    diff      String // JSON Patch operations -  JSON string
+    requestId String
+
+    // Relations
+
+    @@index([entity])
+    @@index([entity, entityId])
+    @@index([actorId])
+    @@index([action])
+    @@index([timestamp])
+}
+
+enum ActionType {
+    create
+    update
+    delete
+    restore
+}
