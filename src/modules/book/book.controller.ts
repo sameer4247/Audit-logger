@@ -1,5 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { BookService } from './book.service';
+import { sendCustomResponse } from '../../common/utils/custom-response';
+import { HTTP_RESPONSE } from '../../common/constants/httpResponse';
 
 export class BookController {
   constructor(private bookService: BookService) {
@@ -22,9 +24,8 @@ export class BookController {
 
    getBookById = async (req: Request, res: Response, next: NextFunction) =>{
     try {
-      console.log(req.params.id);
         const book = await this.bookService.findById(req.params.id);
-        return book;
+        sendCustomResponse({res, statusCode: HTTP_RESPONSE.SUCCESS.STATUS.OK, message: HTTP_RESPONSE.SUCCESS.MESSAGE.OK, data: book});
     } catch (err) {
         next(err);
     }
@@ -32,7 +33,7 @@ export class BookController {
   createBook  = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const book = await this.bookService.create(req.body);
-      res.status(201).json(book);
+        sendCustomResponse({res, statusCode: HTTP_RESPONSE.SUCCESS.STATUS.CREATED, message: HTTP_RESPONSE.SUCCESS.MESSAGE.BOOK_CREATED, data: book});
     } catch (err) {
       next(err);
     }
@@ -41,7 +42,7 @@ export class BookController {
   updateBook = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const book = await this.bookService.update(req.params.id, req.body);
-      res.json(book);
+        sendCustomResponse({res, statusCode: HTTP_RESPONSE.SUCCESS.STATUS.CREATED, message: HTTP_RESPONSE.SUCCESS.MESSAGE.BOOK_UPDATED, data: book});
     } catch (err) {
       next(err);
     }
@@ -49,8 +50,8 @@ export class BookController {
 
   deleteBook = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      await this.bookService.delete(req.params.id);
-      res.json({ ok: true });
+      const book = await this.bookService.delete(req.params.id);
+      sendCustomResponse({res, statusCode: HTTP_RESPONSE.SUCCESS.STATUS.CREATED, message: HTTP_RESPONSE.SUCCESS.MESSAGE.BOOK_DELETED, data: book});
     } catch (err) {
       next(err);
     }

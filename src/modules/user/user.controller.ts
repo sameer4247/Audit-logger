@@ -1,5 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { UserService } from './user.service';
+import { sendCustomResponse } from '../../common/utils/custom-response';
+import { HTTP_RESPONSE } from '../../common/constants/httpResponse';
 
 export class UserController {
   constructor(private userService: UserService) {
@@ -19,37 +21,36 @@ export class UserController {
 //         }
 //   }
 
-   getBookById = async (req: Request, res: Response, next: NextFunction) =>{
+   getUserById = async (req: Request, res: Response, next: NextFunction) =>{
     try {
-      console.log(req.params.id);
         const book = await this.userService.findById(req.params.id);
         return book;
     } catch (err) {
         next(err);
     }
   }
-  createBook  = async (req: Request, res: Response, next: NextFunction) => {
+  createUser  = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const book = await this.userService.create(req.body);
-      res.status(201).json(book);
+      return sendCustomResponse({res, statusCode: 201, message: HTTP_RESPONSE.SUCCESS.MESSAGE.USER_CREATED, data: book});
     } catch (err) {
       next(err);
     }
   };
 
-  updateBook = async (req: Request, res: Response, next: NextFunction) => {
+  updateUser = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const book = await this.userService.update(req.params.id, req.body);
-      res.json(book);
+      return sendCustomResponse({res, statusCode: 201, message: HTTP_RESPONSE.SUCCESS.MESSAGE.USER_UPDATED, data: book});
     } catch (err) {
       next(err);
     }
   };
 
-  deleteBook = async (req: Request, res: Response, next: NextFunction) => {
+  deleteUser = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      await this.userService.delete(req.params.id);
-      res.json({ ok: true });
+      const book =  await this.userService.delete(req.params.id);
+      return sendCustomResponse({res, statusCode: 201, message: HTTP_RESPONSE.SUCCESS.MESSAGE.USER_DELETED, data: book});
     } catch (err) {
       next(err);
     }

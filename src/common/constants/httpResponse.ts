@@ -5,7 +5,13 @@ export const HTTP_RESPONSE = {
         CREATED: 201
     },
     MESSAGE: {
-    OK: "success"
+    OK: "success",
+    USER_CREATED: "user created successfully",
+    USER_UPDATED: "user updated successfully",
+    USER_DELETED: "user deleted successfully",
+    BOOK_CREATED: "book created successfully",
+    BOOK_UPDATED: "book updated successfully",
+    BOOK_DELETED: "book deleted successfully"
     }
   },
 
