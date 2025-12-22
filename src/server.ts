@@ -3,6 +3,7 @@ import  HealthRouter from "./routes/health.route";
 import BookRouter from "./routes/book.route";
 import UserRouter from "./routes/user.route";
 import { handleErrorMiddleware } from "./middleware/error.middleware";
+import { injectContextMiddleware } from "./middleware/context.provider.middleware";
 export class Server {
     private static instance: Server;
     private readonly app: Express;
@@ -24,6 +25,7 @@ export class Server {
         this.app.use('/api/v1/users', UserRouter)
     }
     private registerGlobalMiddleware(){
+        this.app.use(injectContextMiddleware);
     }
     private handleError(){
         this.app.use(handleErrorMiddleware); //this will be at the very last
