@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import { Server } from './server';
 const app = Server.getServerInstance();
 const port = process.env.PORT || 3000;

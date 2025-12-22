@@ -1,6 +1,7 @@
 import express ,{ Request, Response, Express, NextFunction } from "express"
 import  HealthRouter from "./routes/health.route";
 import BookRouter from "./routes/book.route";
+import UserRouter from "./routes/user.route";
 import { handleErrorMiddleware } from "./middleware/error.middleware";
 export class Server {
     private static instance: Server;
@@ -19,7 +20,8 @@ export class Server {
 
     private setRoutes(){
         this.app.use('/health', HealthRouter);
-        this.app.use('/api/v1/books', BookRouter)
+        this.app.use('/api/v1/books', BookRouter);
+        this.app.use('/api/v1/users', UserRouter)
     }
     private registerGlobalMiddleware(){
     }
