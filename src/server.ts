@@ -1,13 +1,14 @@
-import express ,{ Express } from "express"
-import { registerGlobalMiddleware } from "./middleware";
+import express ,{ Request, Response, Express, NextFunction } from "express"
 import  HealthRouter from "./routes/health.route";
+import BookRouter from "./routes/book.route";
+import { handleErrorMiddleware } from "./middleware/error.middleware";
 export class Server {
     private static instance: Server;
     private readonly app: Express;
     constructor(){
         this.app = express();
         this.setConfiguration();
-        registerGlobalMiddleware(this.app);
+        this.registerGlobalMiddleware();
         this.setRoutes();
         this.handleError();
     }
@@ -18,10 +19,12 @@ export class Server {
 
     private setRoutes(){
         this.app.use('/health', HealthRouter);
+        this.app.use('/api/v1/books', BookRouter)
     }
-
+    private registerGlobalMiddleware(){
+    }
     private handleError(){
-      
+        this.app.use(handleErrorMiddleware); //this will be at the very last
     }
     static getServerInstance(){
         if(this.instance){
