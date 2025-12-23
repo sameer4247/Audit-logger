@@ -3,14 +3,14 @@ import { Role } from '../src/prisma/generated/primsa/enums';
 
 async function main() {
   const users = [
-    { name: 'Jane Doe', credentials: '31241fsfs14124142', role: 'admin' },
-    { name: 'Bob the Builder', credentials: 'asfa231d241414c23213', role: 'reviewer' }
+    { name: 'Jane Doe', credentials: '31241fsfs14124142', role: Role.admin},
+    { name: 'Bob the Builder', credentials: 'asfa231d241414c23213', role: Role.reviewer}
   ];
 
   for (const u of users) {
     await prisma.user.upsert({
       where: { credentials: u.credentials },
-      update: { name: u.name, role: u.role as typeof Role },
+      update: { name: u.name, role: u.role },
       create: { name: u.name, credentials: u.credentials, role: u.role }
     });
   }
