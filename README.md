@@ -21,15 +21,16 @@ Minimal audit-logging service built with Express + TypeScript + Prisma.
    HMAC_SECRET="66c66e76b682facd41275f4dc7fd84e08ba182cdfa4e6ad2a5873f035aeeaabe"
    LOG_LEVEL="info"
 
-3. Generate Prisma client
+
+3 .Create/migrate DB (dev)
+   ```cmd
+   npx prisma migrate dev --name init
+   ```
+4. Generate Prisma client
    ```cmd
    npx prisma generate
    ```
 
-4. Create/migrate DB (dev)
-   ```cmd
-   npx prisma migrate dev --name init
-   ```
 
 5. Seed two users
    ```cmd
@@ -47,7 +48,7 @@ Minimal audit-logging service built with Express + TypeScript + Prisma.
    ```cmd
    npm run dev
    ```
-
+##IMPORTANT use x-api-key in the seed file to access protected routes
 ## Key scripts (package.json)
 - `npm run build` — generate Prisma client then compile TypeScript.
 - `npm start` — run compiled app from `dist`.
