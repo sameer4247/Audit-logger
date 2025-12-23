@@ -9,39 +9,42 @@ Minimal audit-logging service built with Express + TypeScript + Prisma.
 
 ## Setup & run (Windows)
 1. Clone & install
-   ```powershell
+   ```cmd
    git clone <repo>
-   cd c:\Users\sam\Projects\Audit-logger
    npm install
    ```
 
 2. Create env file
    - Copy `.env.example` or create `.env` and set DATABASE_URL and PORT.
+   -dummy .env 
+   DATABASE_URL="file:./dev.db"
+   HMAC_SECRET="66c66e76b682facd41275f4dc7fd84e08ba182cdfa4e6ad2a5873f035aeeaabe"
+   LOG_LEVEL="info"
 
 3. Generate Prisma client
-   ```powershell
+   ```cmd
    npx prisma generate
    ```
 
 4. Create/migrate DB (dev)
-   ```powershell
+   ```cmd
    npx prisma migrate dev --name init
    ```
 
 5. Seed two users
-   ```powershell
+   ```cmd
    npm run seed
    ```
    - The seed script in `prisma/seed.ts` upserts two users (Jane, Bob). Ensure `prisma generate` ran and the generated client path is correct.
 
 6. Build & start
-   ```powershell
+   ```cmd
    npm run build   # runs prisma generate + tsc
    npm start       # runs node dist/app.js
    ```
 
 7. Dev mode (live reload)
-   ```powershell
+   ```cmd
    npm run dev
    ```
 
