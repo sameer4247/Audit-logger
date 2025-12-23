@@ -11,27 +11,17 @@ export type AuditTrackerType = {
     entityId: string,
     action: ActionType,
     newState: any,
-    oldState: any,
-    actorId: string,
-    requestId: string
+    oldState?: any,
+    actorId?: string,
+    requestId?: string
 }
 export class AuditTracker {
   private logger = getLogger();
 
   constructor() {}
-
-  async track(
-    entity: AuditableEntity,
-    entityId: string,
-    action: ActionType,
-    oldState: any,
-    newState?: any,
-    actorId?: string,
-    requestId?: string
-  ): Promise<void> {
-    console.log('inside track')
+  async track(auditCtx: AuditTrackerType): Promise<void> {
+    let { entity , entityId, action, actorId, oldState, newState, requestId} = auditCtx;
     const config = getAuditConfig(entity);
-    
     if (!config?.track) return;
     if (!config.actions.includes(action as any)) return;
 
@@ -43,7 +33,8 @@ export class AuditTracker {
       // Calculate patch
       let patch = [];
       if (action === 'create') {
-        patch = [{ op: 'add', path: '', value: newState }]; //create
+        actorId = newState.id;
+        patch = compare({},this.excludeFields(newState, config.exclude));
       } else {
         //calc diff for update/delete
         patch = compare(this.excludeFields(oldState, config.exclude), 
@@ -51,12 +42,12 @@ export class AuditTracker {
       }
       // Redact sensitive fields
       patch = this.redactPatch(patch, config.redact);
-      await prisma.auditLog.create({
+      const auditData = await prisma.auditLog.create({
         data: {
           entity,
           entityId,
           action,
-          actorId : actorId ?? '',
+          actorId,
           requestId,
           diff: JSON.stringify(patch),
           timestamp: new Date()
@@ -97,12 +88,13 @@ export class AuditTracker {
   }
 
   private redactPatch(patch: any[], redact: string[]): any[] {
-    return patch.map(op => {
-      const path = op.path?.split('/');
+    patch = patch.map(op => {
+      const path = op.path?.split('/')?.[1];
       if (redact.includes(path)) {
         return { ...op, value: '[REDACTED]' };
       }
       return op;
     });
+    return patch;
   }
 }

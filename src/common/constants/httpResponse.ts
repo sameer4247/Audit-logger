@@ -27,6 +27,11 @@ export const HTTP_RESPONSE = {
     MESSAGE: {
     INTERNAL_SERVER_ERROR: 'Internal server error',
     INVALID_REQUEST: 'Invalid request data'
+    },
+    DB:{
+    P2025:"Record not found",
+    P2002: "Unique constraint failed",
+    P2003: "Foreign key constraint failed"
     }
   },
 } ;

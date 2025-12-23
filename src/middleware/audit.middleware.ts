@@ -46,7 +46,7 @@ export async function auditLogMiddleware(req: Request, res: Response, next: Next
                 Object.assign(req, oldState);
                 res.on('finish', () => {
                     console.log('inside finish')
-                    auditTracker.track(entity, entityId, action, oldState,newState);
+                    // auditTracker.track(entity, entityId, action, oldState,newState);
                 });
             }
         }

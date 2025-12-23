@@ -1,7 +1,6 @@
 import { createHashKey, generateRawKey } from '../../common/utils/keygen';
 import {prisma} from '../../db/prisma'
 import { CreateUserDto, UpdateUserDto } from './user.dto';
-import { v4 as uuidv4 } from 'uuid';
 
 
 export class UserService {
@@ -48,9 +47,11 @@ export class UserService {
   }
 
   removeUserKeys(data: any){
+    if(data){
         for(let key of this.excludeUserData){
             delete data[key];
         }
-        return data;
+    }
+    return data;
   }
 }

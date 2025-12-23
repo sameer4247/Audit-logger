@@ -2,11 +2,11 @@ import express ,{ Request, Response, Express, NextFunction } from "express"
 import  HealthRouter from "./routes/health.route";
 import BookRouter from "./routes/book.route";
 import UserRouter from "./routes/user.route";
+import AuditRouter from "./routes/audit-log.route";
 import { handleErrorMiddleware } from "./middleware/error.middleware";
 import { injectContextMiddleware } from "./middleware/context.middleware";
 import { loggingMiddleware } from "./middleware/logging.middleware";
 import { NotFoundError } from "./common/utils/custom-error";
-import { auditLogMiddleware } from "./middleware/audit.middleware";
 export class Server {
     private static instance: Server;
     private readonly app: Express;
@@ -26,13 +26,13 @@ export class Server {
         this.app.use('/health', HealthRouter);
         this.app.use('/api/v1/books', BookRouter);
         this.app.use('/api/v1/users', UserRouter);
+        this.app.use('/api/v1/audits', AuditRouter);
         this.app.use((req, res, next) => {
             const error = new NotFoundError(req.originalUrl);
             next(error);
         }) //404 not found
     }
     private registerGlobalMiddleware(){
-        this.app.use(auditLogMiddleware);
         this.app.use(loggingMiddleware);
         this.app.use(injectContextMiddleware);
     }

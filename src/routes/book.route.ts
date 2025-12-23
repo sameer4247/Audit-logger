@@ -4,22 +4,25 @@ import { BookController } from '../modules/book/book.controller';
 import { validationMiddleware } from '../middleware/validation.middleware';
 import { CreateBookDto, UpdateBookDto } from '../modules/book/book.dto';
 import { BookService } from '../modules/book/book.service';
+import { authMiddleware } from '../middleware/auth.middleware';
+import { sendCustomResponse } from '../common/utils/custom-response';
+import { BookRepository } from '../modules/book/book.repository';
 
 class BookRouter {
   public router: Router;
+  private readonly bookRepository: BookRepository
   private readonly bookController: BookController;
-  private readonly bookService;
+  private readonly bookService: BookService;
   constructor() {
     this.router = Router();
-    this.bookService = new BookService();
+    this.bookRepository = new BookRepository();
+    this.bookService = new BookService(this.bookRepository);
     this.bookController = new BookController(this.bookService);
     this.initializeRoutes();
   }
 
   private initializeRoutes() {
-    // Requirements: All book routes require authentication [cite: 60]
-    // this.router.use(authenticate);
-
+    this.router.use(authMiddleware([]));
     this.setGetRoutes();
     this.setPostRoutes();
     this.setPatchRoutes(); // Use PATCH for updates 
@@ -27,15 +30,11 @@ class BookRouter {
   }
 
   private setGetRoutes() {
-  //  this.router.get('/', this.bookController.getBooks);
+    this.router.get('/', this.bookController.getBookList);
     this.router.get('/:id', this.bookController.getBookById);
   }
 
   private setPostRoutes() {
-    /**
-     * POST /api/books [cite: 36, 114]
-     * Uses combined DTO/Validator 
-     */
     this.router.post(
       '/', 
       validationMiddleware(CreateBookDto), 
@@ -44,9 +43,6 @@ class BookRouter {
   }
 
   private setPatchRoutes() {
-    /**
-     * PATCH /api/books/:id [cite: 38, 116]
-     */
     this.router.patch(
       '/:id', 
       validationMiddleware(UpdateBookDto), 
@@ -55,9 +51,6 @@ class BookRouter {
   }
 
   private setDeleteRoutes() {
-    /**
-     * DELETE /api/books/:id [cite: 39, 118]
-     */
     this.router.delete('/:id', this.bookController.deleteBook);
   }
 }
