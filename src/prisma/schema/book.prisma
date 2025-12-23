@@ -8,8 +8,8 @@ model Book {
   deletedAt   DateTime? // Soft delete
 
   // Relations
-  createdBy     String
-  createdByUser User   @relation("createdBy", fields: [createdBy], references: [id])
+  createdBy     String?
+  createdByUser User?   @relation("createdBy", fields: [createdBy], references: [id])
 
   updatedBy     String?
   updatedByUser User?   @relation("updatedBy", fields: [updatedBy], references: [id])

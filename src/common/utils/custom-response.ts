@@ -1,7 +1,6 @@
 import { Response } from 'express';
-import { HTTP_RESPONSE } from '../constants/httpResponse';
-
-type CustomResponse<T> = {
+import { getContext } from './context';
+type CustomResponseType<T> = {
   res: Response;
   statusCode: number;
   message: string;
@@ -10,12 +9,18 @@ type CustomResponse<T> = {
 
 export function sendCustomResponse<T>({
   res,
-  statusCode = HTTP_RESPONSE.SUCCESS.STATUS.OK,
-  message = HTTP_RESPONSE.SUCCESS.MESSAGE.OK,
+  statusCode,
+  message,
   data,
-}: CustomResponse<T>) {
+}: CustomResponseType<T>) {
+  const requestId = getContext()?.requestId;
+  const userId = getContext()?.userId;
+  //async audit-logging here
+  const auditPayload = {
+
+  }
   return res.status(statusCode).json({
-    success: true,
+    requestId,
     message,
     data,
   });
