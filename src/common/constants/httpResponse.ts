@@ -5,7 +5,13 @@ export const HTTP_RESPONSE = {
         CREATED: 201
     },
     MESSAGE: {
-    OK: "success"
+    OK: "success",
+    USER_CREATED: "user created successfully",
+    USER_UPDATED: "user updated successfully",
+    USER_DELETED: "user deleted successfully",
+    BOOK_CREATED: "book created successfully",
+    BOOK_UPDATED: "book updated successfully",
+    BOOK_DELETED: "book deleted successfully"
     }
   },
 
@@ -21,6 +27,11 @@ export const HTTP_RESPONSE = {
     MESSAGE: {
     INTERNAL_SERVER_ERROR: 'Internal server error',
     INVALID_REQUEST: 'Invalid request data'
+    },
+    DB:{
+    P2025:"Record not found",
+    P2002: "Unique constraint failed",
+    P2003: "Foreign key constraint failed"
     }
   },
 } ;

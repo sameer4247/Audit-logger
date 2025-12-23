@@ -1,40 +1,49 @@
 import { HTTP_RESPONSE } from "../constants/httpResponse";
 
-export class CustomError extends Error {
+
+type CustomErrorType<T> = {
+  errorCode: string,
+  message: string,
+  statusCode: number
+  details?: T
+}
+export class CustomError<T> extends Error {
   statusCode: number;
   errorCode: string;
-  constructor(errorCode: string,  message: string = HTTP_RESPONSE.ERROR.MESSAGE.INTERNAL_SERVER_ERROR, statusCode: number = HTTP_RESPONSE.ERROR.STATUS.INTERNAL_SERVER_ERROR, ) {
+  details?: T;
+  constructor({errorCode,  message = HTTP_RESPONSE.ERROR.MESSAGE.INTERNAL_SERVER_ERROR, statusCode =HTTP_RESPONSE.ERROR.STATUS.INTERNAL_SERVER_ERROR, details} : CustomErrorType<T>) {
     super(message);
     this.statusCode = statusCode ;
     this.errorCode = errorCode;
+    this.details = details;
     Error.captureStackTrace(this, this.constructor);
   }
 }
-export class ValidationError extends CustomError {
-  constructor(message: string) {
-    super('VALIDATION_ERROR', message, 400);
+export class ValidationError<T> extends CustomError<T>{
+  constructor(message: string, details?: T) {
+    super({errorCode: 'VALIDATION_ERROR', message, statusCode: 400, details});
   }
 }
-export class AuthError extends CustomError {
-  constructor(message: string = 'Unauthorized') {
-    super('AUTH_ERROR', message, 401);
-  }
-}
-
-export class ForbiddenError extends CustomError {
-  constructor(message: string = 'Forbidden') {
-    super('FORBIDDEN', message, 403);
+export class AuthError<T> extends CustomError<T> {
+  constructor(message: string, details?: T) {
+    super({errorCode: 'AUTH_ERROR', message, statusCode: 401, details});
   }
 }
 
-export class NotFoundError extends CustomError {
-  constructor(resource: string) {
-    super('NOT_FOUND', `${resource} not found`, 404);
+export class ForbiddenError<T> extends CustomError<T> {
+  constructor(message: string, details?: T) {
+    super({errorCode: 'FORBIDDEN', message, statusCode: 403, details});
   }
 }
 
-export class ConflictError extends CustomError {
-  constructor(message: string) {
-    super('CONFLICT', message, 409);
+export class NotFoundError<T> extends CustomError<T> {
+  constructor(resource: string, details?: T) {
+    super({errorCode: 'RESOURCE_NOT_FOUND', message: `${resource} not found`, statusCode: 404, details});
+  }
+}
+
+export class ConflictError<T> extends CustomError<T> {
+  constructor(message: string, details?: T) {
+        super({errorCode: 'CONFLICT', message, statusCode: 409, details});
   }
 }
