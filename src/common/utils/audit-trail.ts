@@ -33,7 +33,7 @@ export class AuditTracker {
       // Calculate patch
       let patch = [];
       if (action === 'create') {
-        actorId = newState.id;
+        actorId = actorId || newState.id;
         patch = compare({},this.excludeFields(newState, config.exclude));
       } else {
         //calc diff for update/delete
