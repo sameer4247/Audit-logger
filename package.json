@@ -2,13 +2,20 @@
   "name": "audit-logger",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "dist/app.js",
   "scripts": {
+    "build": "prisma generate && tsc",
+    "start": "node dist/app.js",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon --watch src --exec node -r ts-node/register --inspect=0.0.0.0:9229 src/app.ts"
+    "dev": "nodemon --watch src --exec node -r ts-node/register --inspect=0.0.0.0:9229 src/app.ts",
+    "prisma:generate": "prisma generate",
+    "prisma:migrate:dev": "prisma migrate dev --name init",
+    "prisma:studio": "prisma studio",
+    "prisma:seed": "ts-node prisma/seed.ts",
+    "seed": "ts-node prisma/seed.ts"
   },
   "keywords": [],
-  "author": "",
+  "author": "sameer kumar <> sameer4247@gmail.com",
   "license": "ISC",
   "devDependencies": {
     "@types/better-sqlite3": "^7.6.13",

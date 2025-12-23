@@ -1,17 +1,16 @@
 model AuditLog {
-    id        String     @id @default(cuid())
+    id        String     @id @default(uuid())
     timestamp DateTime   @default(now())
-    entity    String // 'Book', 'User', etc.
+    entity    String // 'Book', 'User'
     entityId  String
     action    ActionType
-    actorId   String
-    actor     User       @relation("actor", fields: [actorId], references: [id])
+    actorId   String?
+    actor     User?      @relation("actor", fields: [actorId], references: [id])
 
-    diff      String // JSON Patch operations -  JSON string
+    diff      String // JSON Patch ops
     requestId String
 
     // Relations
-
     @@index([entity])
     @@index([entity, entityId])
     @@index([actorId])
