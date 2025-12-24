@@ -2,6 +2,7 @@ import { prisma } from "../../db/prisma";
 import { AuditLog, Prisma } from "../../prisma/generated/primsa/client";
 import { HTTP_RESPONSE } from "../../common/constants/httpResponse";
 import { decodeCursor } from "../../common/utils/pagination";
+import { DatabaseError } from "../../common/utils/custom-error";
 export class AuditLogRepository {
     constructor() { }
     async findMany(
@@ -9,40 +10,32 @@ export class AuditLogRepository {
         cursor?: string,
         query?: any
     ) {
-        const gte: Date | undefined = query?.from ? new Date(query.from) : undefined;
-        const lte: Date | undefined = query?.to ? new Date(query.to) : undefined;
-        const fieldsChanged: string[] = query?.fieldsChanged ? query?.fieldsChanged.split(",").map((el: string) => `/${el}`) : [];
-        delete query.from;
-        delete query.to;
-        delete query.fieldsChanged;
+        const { timestamp, pathFilter, otherFilters } = query;
         const decodedCursor = decodeCursor(cursor);
-        const audits = await prisma.auditLog.findMany({
+        return prisma.auditLog.findMany({
             take: limit + 1,
             skip: 0,
             where: {
-                ...query,
-                timestamp: { gte, lte },
-                OR: fieldsChanged.map(path => ({
-                    diff: {
-                        // This looks for the exact string '"path":"/role"' inside the JSON string
-                        contains: `"path":"${path}"`
-                    }
-                }))
+                ...otherFilters,
+                timestamp,
+                OR: pathFilter
             },
             cursor: decodedCursor ? { id: decodedCursor.id } : undefined,
             orderBy: { timestamp: 'desc' }
-        });
-        return audits;
-    }
-    async findOne(id: string){
-    return prisma.auditLog.findUniqueOrThrow({
-        where: { id }
-    }).catch(error => {
-        if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        }).catch(error => {
             const errorCode = error?.code as keyof typeof HTTP_RESPONSE.ERROR.DB;
-            throw HTTP_RESPONSE.ERROR.DB[errorCode];
+            throw new DatabaseError(HTTP_RESPONSE.ERROR.DB[errorCode]);
         }
-    });
-}
+        )
+
+    }
+    async findOne(id: string) {
+        return prisma.auditLog.findUniqueOrThrow({
+            where: { id }
+        }).catch(error => {
+            const errorCode = error?.code as keyof typeof HTTP_RESPONSE.ERROR.DB;
+            throw new DatabaseError(HTTP_RESPONSE.ERROR.DB[errorCode]);
+        });
+    }
 
 }

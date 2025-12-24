@@ -40,6 +40,9 @@ class BookRouter {
       validationMiddleware(CreateBookDto), 
       this.bookController.createBook
     );
+     this.router.post(
+      '/bulk',this.bookController.createBookMany
+    );
   }
 
   private setPatchRoutes() {

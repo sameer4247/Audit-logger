@@ -1,57 +1,33 @@
 import { createHashKey, generateRawKey } from '../../common/utils/keygen';
 import {prisma} from '../../db/prisma'
-import { CreateUserDto, UpdateUserDto } from './user.dto';
+import { User } from '../../prisma/generated/primsa/client';
+import { UserRepository } from './user.repository';
 
 
 export class UserService {
-  constructor() {}
-  excludeUserData = [
-    "id",
-    "credentials"
-  ]
-  async findById(id: string){
-      return this.removeUserKeys(prisma.user.findUniqueOrThrow({
-          where: { id }
-      }));
-  }
-
-  async create(data: any) {
-
-    //generate credentials for user
-    const randomKey = generateRawKey();
-    const credentials = createHashKey(randomKey);
-    return this.removeUserKeys({... await prisma.user.create({
-      data: {
-        ...data,
-        credentials
-        //createdBy: userId,
-      } as any,
-    }), api_key : randomKey});
-  }
-
-  async update(id: string, data: UpdateUserDto, userId?: string) {
-    // 1. Fetch current state for diffing
-    const existingUser = await prisma.user.findUniqueOrThrow({ where: { id } });
-    // 2. Perform Update
-    return this.removeUserKeys(await prisma.user.update({
-      where: { id },
-      data: {
-        ...data
-      } as any,
-    }));
-  }
-
-  async delete(id: string) {
-    const existingUser = await prisma.user.findUniqueOrThrow({ where: { id } });
-    return this.removeUserKeys(await prisma.user.delete({ where: { id } }));
-  }
-
-  removeUserKeys(data: any){
-    if(data){
-        for(let key of this.excludeUserData){
-            delete data[key];
-        }
+  constructor(private userRepository: UserRepository) {}
+  
+   async getUserList(limit: number, cursor: string | undefined){
+        return this.userRepository.findMany(limit, cursor)
     }
-    return data;
-  }
+  
+    async getUserById(id: string){
+      return this.userRepository.findOne(id);
+    }
+  
+    async createUser(data: User){
+    //generate credentials for user
+      const randomKey = generateRawKey();
+      const credentials = createHashKey(randomKey);
+      return {...await this.userRepository.create({...data, credentials}), 'x-api-key':randomKey};
+    }
+  
+    async updateUser(id: string, data: User){
+      return this.userRepository.update(id, data);
+    }
+  
+    async deleteUser(id: string){
+      return this.userRepository.delete(id);
+    }
+ 
 }

@@ -8,7 +8,7 @@ export const auditConfig = {
   },
   User: { 
     track: true, 
-    exclude: [''], 
+    exclude: ["updatedAt", "createdAt","deletedAt"], 
     redact: ['credentials'] ,
     actions: ['create', 'update','delete']
   },

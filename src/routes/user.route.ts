@@ -5,20 +5,23 @@ import { validationMiddleware } from '../middleware/validation.middleware';
 import { CreateUserDto, UpdateUserDto } from '../modules/user/user.dto';
 import { UserService } from '../modules/user/user.service';
 import { authMiddleware } from '../middleware/auth.middleware';
+import { UserRepository } from '../modules/user/user.repository';
 
-class BookRouter {
+class UserRouter {
   public router: Router;
   private readonly userController: UserController;
-  private readonly userService;
+  private readonly userService: UserService;
+  private readonly userRepository: UserRepository;
   constructor() {
     this.router = Router();
-    this.userService = new UserService();
+    this.userRepository = new UserRepository();
+    this.userService = new UserService(this.userRepository);
     this.userController = new UserController(this.userService);
     this.initializeRoutes();
   }
 
   private initializeRoutes() {
-    this.router.use(authMiddleware([])); 
+    //this.router.use(authMiddleware([])); 
     this.setGetRoutes();
     this.setPostRoutes();
     this.setPatchRoutes(); // Use PATCH for updates 
@@ -26,6 +29,7 @@ class BookRouter {
   }
 
   private setGetRoutes() {
+    this.router.get("/", this.userController.getUserList);
     this.router.get('/:id', this.userController.getUserById);
   }
 
@@ -50,4 +54,4 @@ class BookRouter {
   }
 }
 
-export default new BookRouter().router;
+export default new UserRouter().router;

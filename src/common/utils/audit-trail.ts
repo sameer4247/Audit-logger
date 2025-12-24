@@ -29,7 +29,8 @@ export class AuditTracker {
         const ctx = getContext() as AsyncContext;
         actorId = actorId || ctx.userId;
         requestId = requestId || ctx.requestId;
-        newState
+        newState = JSON.parse(JSON.stringify(newState));
+        if(oldState) JSON.parse(JSON.stringify(oldState));
       // Calculate patch
       let patch = [];
       if (action === 'create') {

@@ -23,13 +23,13 @@ export const authMiddleware = (allowedRoles: Role[]) => {
       const user = await prisma.user.findUniqueOrThrow({
         where: { credentials: hashkey }
       });
+      (req as any).user = user;
       if (allowedRoles?.length && !allowedRoles.includes((req as any)?.user?.role)) {
         const forbiddenError = new ForbiddenError("You are not authorised to access this resource.")
         next(forbiddenError);
       }
       const ctx = getContext();
       if (ctx?.userId == undefined) ctx!.userId = user.id || "sys";
-      (req as any).user = user;
       next();
     } catch (error) {
       throw new AuthError('Invalid api key');

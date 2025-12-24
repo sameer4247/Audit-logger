@@ -47,3 +47,9 @@ export class ConflictError<T> extends CustomError<T> {
         super({errorCode: 'CONFLICT', message, statusCode: 409, details});
   }
 }
+
+export class DatabaseError<T> extends CustomError<T> {
+   constructor(message: string, details?: T) {
+        super({errorCode: 'DB_ERROR', message, statusCode: 409, details});
+  }
+}

@@ -2,7 +2,7 @@ import { randomBytes, createHmac, KeyObject } from 'crypto';
 
 //generates a random hash key for new user
 export const generateRawKey = (): string => {
-  return `user_${randomBytes(24).toString('hex')}`;
+  return `sk_${randomBytes(24).toString('hex')}`;
 };
 
 export const createHashKey = (key: string): string => {

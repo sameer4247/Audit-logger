@@ -38,12 +38,20 @@ export class BookController {
     try {
       const {user} = req as any;
       const book = await this.bookService.createBook({...req.body, createdBy: user.id});
-        sendCustomResponse({res, statusCode: HTTP_RESPONSE.SUCCESS.STATUS.CREATED, message: HTTP_RESPONSE.SUCCESS.MESSAGE.BOOK_CREATED, data: book});
+      sendCustomResponse({res, statusCode: HTTP_RESPONSE.SUCCESS.STATUS.CREATED, message: HTTP_RESPONSE.SUCCESS.MESSAGE.BOOK_CREATED, data: book});
     } catch (err) {
       next(err);
     }
   };
 
+  createBookMany  = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const book = await this.bookService.createBookMany(req.body);
+      sendCustomResponse({res, statusCode: HTTP_RESPONSE.SUCCESS.STATUS.CREATED, message: HTTP_RESPONSE.SUCCESS.MESSAGE.BOOK_CREATED, data: book});
+    } catch (err) {
+      next(err);
+    }
+  };
   updateBook = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const {user} = req as any;

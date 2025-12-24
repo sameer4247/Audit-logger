@@ -15,6 +15,10 @@ export class BookService {
     return this.bookRepository.create(data);
   }
 
+   createBookMany(data: Book[]){
+    return this.bookRepository.createMany(data);
+  }
+
   updateBook(id: string, data: Book){
     return this.bookRepository.update(id, data);
   }

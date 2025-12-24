@@ -1,61 +1,57 @@
-import { CreateBookDto, UpdateBookDto } from "./book.dto";
 import { prisma } from "../../db/prisma";
-import { Book, Prisma } from "../../prisma/generated/primsa/client";
+import { User, Prisma } from "../../prisma/generated/primsa/client";
 import { HTTP_RESPONSE } from "../../common/constants/httpResponse";
 import { decodeCursor } from "../../common/utils/pagination";
 import { DatabaseError } from "../../common/utils/custom-error";
-export class BookRepository {
-    constructor() { }
+export class UserRepository {
     async findMany(
         limit: number = 10,
         cursor?: string
     ) {
         const decodedCursor = decodeCursor(cursor);
-        return prisma.book.findMany({
+        return prisma.user.findMany({
             take: limit + 1,
             skip: 0,
             cursor: decodedCursor ? { id: decodedCursor.id } : undefined,
-            where: { deletedAt: null },
+            omit: {
+                "credentials": true
+            },
             orderBy: { createdAt: 'desc' }
         }).catch(error => {
             const errorCode = error?.code as keyof typeof HTTP_RESPONSE.ERROR.DB;
             throw new DatabaseError(HTTP_RESPONSE.ERROR.DB[errorCode]);
-        });;
+        });
     }
     async findOne(id: string) {
-        return prisma.book.findUniqueOrThrow({
-            where: { id }
-        }).catch(error => {
-            const errorCode = error?.code as keyof typeof HTTP_RESPONSE.ERROR.DB;
-            throw new DatabaseError(HTTP_RESPONSE.ERROR.DB[errorCode]);
-        });
-    }
-    async create(data: Book) {
-        return prisma.book.create({
-            data: {
-                ...data,
-                //createdBy: userId,
-            },
-        }).catch(error => {
-            const errorCode = error?.code as keyof typeof HTTP_RESPONSE.ERROR.DB;
-            throw new DatabaseError(HTTP_RESPONSE.ERROR.DB[errorCode]);
-        });
-    }
-     async createMany(data: Book[]) {
-        return prisma.book.createMany({
-            data
-        }).catch(error => {
-            const errorCode = error?.code as keyof typeof HTTP_RESPONSE.ERROR.DB;
-            throw new DatabaseError(HTTP_RESPONSE.ERROR.DB[errorCode]);
-        });
-    }
-    async update(id: string, data: Book, userId?: string) {
-        return prisma.book.update({
+        return prisma.user.findUniqueOrThrow({
             where: { id },
-            data: {
-                ...data,
-                updatedBy: userId,
-            },
+            omit: {
+                "credentials": true
+            }
+        }).catch(error => {
+            const errorCode = error?.code as keyof typeof HTTP_RESPONSE.ERROR.DB;
+            throw new DatabaseError(HTTP_RESPONSE.ERROR.DB[errorCode]);
+        });
+    }
+    async create(data: User) {
+        return prisma.user.create({
+            data,
+            omit: {
+                "credentials": true
+            }
+        }).catch(error => {
+            const errorCode = error?.code as keyof typeof HTTP_RESPONSE.ERROR.DB;
+            throw new DatabaseError(HTTP_RESPONSE.ERROR.DB[errorCode]);
+        });
+    }
+
+    async update(id: string, data: User) {
+        return prisma.user.update({
+            where: { id },
+            data,
+            omit: {
+                "credentials": true
+            }
         }).catch(error => {
             const errorCode = error?.code as keyof typeof HTTP_RESPONSE.ERROR.DB;
             throw new DatabaseError(HTTP_RESPONSE.ERROR.DB[errorCode]);
@@ -63,7 +59,11 @@ export class BookRepository {
     }
 
     async delete(id: string) {
-        await prisma.book.delete({ where: { id } }).catch(error => {
+        return prisma.user.delete({
+            where: { id }, omit: {
+                "credentials": true
+            }
+        }).catch(error => {
             const errorCode = error?.code as keyof typeof HTTP_RESPONSE.ERROR.DB;
             throw new DatabaseError(HTTP_RESPONSE.ERROR.DB[errorCode]);
         });

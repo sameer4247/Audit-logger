@@ -6,7 +6,11 @@ export function validationMiddleware(dtoClass: any) {
   return async (req: Request, res: Response, next: NextFunction) => {
     try {
       const dtoObj = plainToInstance(dtoClass, {...req.body, ...req.params, ...req.query});
-      const errors = await validate(dtoObj);
+      const errors = await validate(dtoObj,
+        {
+          whitelist: true
+        }
+      );
       if (errors.length > 0) {
         const formattedErrors = errors.map(err => ({
           property: err.property,

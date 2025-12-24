@@ -19,9 +19,8 @@ export const auditExtension = Prisma.defineExtension((client) => {
                         //get exisitng data -oldState
                         if (['update', 'delete'].includes(operation)) {
                             try {
-                                oldState = await (client as any)?.[model].findUnique({
-                                where : (args as any).where
-                            })
+                                const {data , ...rest} = args as any;
+                                oldState = await (client as any)?.[model].findUnique(rest);
                             } catch (error) {
                                 //continue;
                             }
